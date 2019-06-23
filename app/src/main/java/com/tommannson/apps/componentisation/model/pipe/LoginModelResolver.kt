@@ -3,7 +3,7 @@ package com.tommannson.apps.componentisation.model.pipe
 import com.tommannson.apps.componentisation.arch.RxAction
 import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.components.login.LoginFormEvent
-import com.tommannson.apps.componentisation.model.pipe.resolvers.LoginResolver
+import com.tommannson.apps.componentisation.model.pipe.resolvers.LoginBoController
 import io.reactivex.disposables.Disposable
 
 class LoginModelResolver {
@@ -13,7 +13,7 @@ class LoginModelResolver {
     fun resolve(event: RxAction, factory: ScopedEventBusFactory) {
         when (event) {
             is LoginFormEvent -> {
-                LoginResolver()
+                LoginBoController()
                     .also {
                         it.screenScoped = factory
                     }

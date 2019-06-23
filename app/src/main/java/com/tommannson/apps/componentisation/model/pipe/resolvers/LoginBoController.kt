@@ -9,7 +9,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
-class LoginResolver : BaseResolver<LoginFormEvent>() {
+class LoginBoController : BaseResolver<LoginFormEvent>() {
     override fun validType(input: Any) = type<LoginFormEvent>(input)
 
     val impl = MainInteractorImpl()
@@ -17,7 +17,6 @@ class LoginResolver : BaseResolver<LoginFormEvent>() {
     lateinit var appScoped: ScopedEventBusFactory
 
     override fun resolve(event: LoginFormEvent) {
-
         when (event) {
             is LoginFormEvent.SubmitLogin -> {
                 Observable.just(event)
@@ -29,8 +28,6 @@ class LoginResolver : BaseResolver<LoginFormEvent>() {
                     }
             }
         }
-
-
     }
 
     fun validateForm(event: LoginFormEvent.SubmitLogin): LoginFormEvent {

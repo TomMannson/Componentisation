@@ -1,7 +1,7 @@
 package com.tommannson.apps.componentisation.model.pipe
 
 
-import com.tommannson.apps.componentisation.model.pipe.resolvers.LoginResolver
+import com.tommannson.apps.componentisation.model.pipe.resolvers.LoginBoController
 import com.tommannson.apps.componentisation.arch.RxAction
 import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.components.login.LoginFormEvent
@@ -17,7 +17,7 @@ class ModelResolver {
 //                DataResolver().resolve(event = event, busFactory = factory);
 //            }
             is LoginFormEvent -> {
-                LoginResolver().resolve(event = event, busFactory = factory);
+                LoginBoController().resolve(event = event, busFactory = factory);
             }
         }
     }
