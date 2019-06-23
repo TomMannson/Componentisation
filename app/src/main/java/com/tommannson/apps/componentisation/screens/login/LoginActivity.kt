@@ -2,12 +2,12 @@ package com.tommannson.apps.componentisation.screens.login
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.tommannson.apps.componentisation.components.login.LoginState
-import com.tommannson.apps.componentisation.components.login.LoginUICompoent
-import com.tommannson.apps.componentisation.model.pipe.LoginModelResolver
-import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.R
+import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.arch.UINewHost
+import com.tommannson.apps.componentisation.components.login.LoginState
+import com.tommannson.apps.componentisation.components.login.LoginUIComponent
+import com.tommannson.apps.componentisation.model.pipe.LoginModelResolver
 
 
 class LoginActivity : AppCompatActivity() {
@@ -21,9 +21,15 @@ class LoginActivity : AppCompatActivity() {
 
         model.subscribeWithBus(ScopedEventBusFactory.get(this))
         host = UINewHost.create(this)
-                .composition({
-                    add(LoginUICompoent(R.id.login_form, ScopedEventBusFactory.get(this@LoginActivity), LoginState("test", "")))
-                })
+            .composition({
+                add(
+                    LoginUIComponent(
+                        findViewById(R.id.login_form),
+                        ScopedEventBusFactory.get(this@LoginActivity),
+                        LoginState("test", "")
+                    )
+                )
+            })
 
     }
 

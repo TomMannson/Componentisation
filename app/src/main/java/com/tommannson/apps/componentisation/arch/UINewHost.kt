@@ -5,16 +5,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.netflix.arch.DisposingChecker
-import com.netflix.arch.UINewComponent
+import java.util.*
+import kotlin.collections.HashMap
 
 open class UINewHost : ViewModel(), UIParent {
 
     override fun getFindViewGroup(id: Int) = activity.findViewById<ViewGroup>(id)
 
     val disposingChecker = DisposingChecker()
-    val mapOfComponent = mutableMapOf<Int, UINewComponent<*, *>>()
-    var numberOfComponents = 0;
+    val mapOfComponent = mutableMapOf<UUID, UINewComponent<*, *>>()
     var currentComponentNumber = 0;
+    val stateMigrator = StateTreeMigrator()
     lateinit var activity: AppCompatActivity
 
     companion object {
@@ -27,27 +28,25 @@ open class UINewHost : ViewModel(), UIParent {
     }
 
     fun add(component: UINewComponent<*, *>) {
-        currentComponentNumber++;
-        if (!mapOfComponent.contains(currentComponentNumber)) {
-            mapOfComponent[currentComponentNumber] = component
-        }
+        mapOfComponent[UUID.randomUUID()] = component
     }
 
-    fun build(needRender: Boolean = true) {
-        numberOfComponents = currentComponentNumber
+    fun build(
+        needRender: Boolean = true
+    ) {
         for (component in mapOfComponent) {
-            component.value.create(this);
+            component.value.create();
         }
         if (needRender) {
             for (component in mapOfComponent) {
-                component.value.render();
+                component.value.commitState();
             }
         }
     }
 
     fun dispatchRendering() {
         for (component in mapOfComponent) {
-            component.value.render();
+            component.value.commitState();
         }
     }
 
@@ -60,9 +59,7 @@ open class UINewHost : ViewModel(), UIParent {
     }
 
     fun composition(function: UINewHost.() -> Unit): UINewHost {
-        if (mapOfComponent.isEmpty()) {
-            function()
-        }
+        function()
         build(!mapOfComponent.isEmpty())
         return this
     }

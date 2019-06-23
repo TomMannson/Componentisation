@@ -19,7 +19,6 @@ package com.tommannson.apps.componentisation.arch
 
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import com.netflix.arch.UINewComponent
 
 abstract class UINewView<T, State>(val container: ViewGroup, private var lazyLoad: Boolean = false) : UIParent {
 
@@ -32,52 +31,12 @@ abstract class UINewView<T, State>(val container: ViewGroup, private var lazyLoa
 
     abstract fun render(localState: State);
 
-    fun show() {
-        lazyLoad = true;
-        parent.buildView()
-    }
-
     internal fun compose(uiComponent: UINewComponent<T, State>) {
         parent = uiComponent
-    }
-
-    internal fun buildView() {
-        build();
-        createChildren();
     }
 
     protected fun add(component: UINewComponent<*, *>) {
         list += component
     }
 
-    internal fun createChildren() {
-        if (!lazyLoad) {
-            for (component in parent.list) {
-                component.create(this);
-            }
-        }
-    }
-
-    internal fun renderChildren() {
-        if (!lazyLoad) {
-            for (component in parent.list) {
-                component.render();
-            }
-        }
-    }
-
-    fun renderView(localState: State) {
-        render(localState)
-        renderChildren()
-    }
-
-    fun clearView() {
-        for (component in parent.list) {
-            component.dispose();
-        }
-    }
-
-    override fun getFindViewGroup(id: Int): ViewGroup {
-        return container.findViewById(id)
-    }
 }

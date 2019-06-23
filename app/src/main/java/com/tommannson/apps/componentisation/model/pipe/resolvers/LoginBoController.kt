@@ -1,8 +1,8 @@
 package com.tommannson.apps.componentisation.model.pipe.resolvers
 
-import android.util.Log
 import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.components.login.LoginFormEvent
+import com.tommannson.apps.componentisation.components.login.LoginState
 import com.tommannson.apps.componentisation.model.pipe.BaseResolver
 import com.tommannson.apps.componentisation.model.ws.MainInteractorImpl
 import io.reactivex.Observable
@@ -21,10 +21,17 @@ class LoginBoController : BaseResolver<LoginFormEvent>() {
             is LoginFormEvent.SubmitLogin -> {
                 Observable.just(event)
                     .delay(1000, TimeUnit.MILLISECONDS)
+                    .doOnNext {
+                        screenScoped.emit(LoginState("", "", true))
+                    }
+                    .delay(1000, TimeUnit.MILLISECONDS)
                     .map(::validateForm)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
-                        screenScoped.emit(it)
+                        when(it){
+                            is LoginFormEvent.LoginDataInvalid -> LoginState("", "", error = false)
+                            is LoginFormEvent.LoginSuccess -> LoginState("", "", error = false, progress = false)
+                        }
                     }
             }
         }
@@ -32,8 +39,8 @@ class LoginBoController : BaseResolver<LoginFormEvent>() {
 
     fun validateForm(event: LoginFormEvent.SubmitLogin): LoginFormEvent {
         if (event.login == "") {
-            Log.d("asdasdasd", "asdasdasd")
+            return LoginFormEvent.LoginDataInvalid("sdfsdf", "asdasd")
         }
-        return LoginFormEvent.SubmitLogin("", "")
+        return LoginFormEvent.LoginSuccess
     }
 }

@@ -1,44 +1,61 @@
-package com.netflix.arch
+package com.tommannson.apps.componentisation.arch
 
 import android.view.ViewGroup
-import com.tommannson.apps.componentisation.arch.UINewView
-import com.tommannson.apps.componentisation.arch.UIParent
+import com.tommannson.apps.componentisation.arch.BindingState.NEED_REBIND
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 
-abstract class UINewComponent<T, State>(protected val parrentId: Int, initialState: State) {
+abstract class UINewComponent<T, State>(
+    val container: ViewGroup,
+    initialState: State,
+    lazyState: LazyState = LazyState.initialised()
+) {
 
-    lateinit protected var view: UINewView<T, State>
-    val list = mutableListOf<UINewComponent<*, *>>()
-    val disposable = CompositeDisposable()
     private var localState = initialState
+    val disposable = CompositeDisposable()
     var id = 0;
+    val nestingManager = NestingComponentManager()
+    val lazyInitialisation = LazyComponentManager(lazyState, this, nestingManager)
 
-    abstract fun createView(container: ViewGroup): UINewView<T, State>;
     abstract fun getContainerId(): Int
     abstract fun getUserInteractionEvents(): Observable<T>
 
-
-    open fun create(uiParent: UIParent) {
-        view = createView(uiParent.getFindViewGroup(parrentId))
-        view.compose(this)
-        buildView()
+    open fun create() {
+        build()
+        createChildren()
     }
 
-    internal fun buildView() {
-        view.buildView()
+    protected fun add(component: UINewComponent<*, *>) {
+        nestingManager.add(component);
     }
+
+    private fun createChildren() {
+        nestingManager.createChildren()
+    }
+
+    fun commitState() {
+        render(localState)
+        nestingManager.renderChildren()
+    }
+
+    fun show() {
+        lazyInitialisation.initialize();
+        lazyInitialisation.performLazyLoadingIfNeed()
+    }
+
+    abstract fun build()
+
+    abstract fun render(localState: State)
 
     open fun dispose() {
-        view.clearView();
+        nestingManager.clearChildren()
     }
 
-    fun render() {
-        view.renderView(localState)
-    }
-
-    fun Disposable.track() {
-        disposable.add(this)
+    fun Observable<State>.track() {
+        disposable.add(
+            this.observeOn(AndroidSchedulers.mainThread())
+                .subscribe { this@UINewComponent.render(it) }
+        )
     }
 }

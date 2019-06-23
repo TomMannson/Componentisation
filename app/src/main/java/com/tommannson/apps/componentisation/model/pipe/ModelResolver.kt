@@ -17,7 +17,11 @@ class ModelResolver {
 //                DataResolver().resolve(event = event, busFactory = factory);
 //            }
             is LoginFormEvent -> {
-                LoginBoController().resolve(event = event, busFactory = factory);
+                LoginBoController().also {
+                    it.appScoped = factory
+                    it.resolve(event = event);
+                }
+
             }
         }
     }
