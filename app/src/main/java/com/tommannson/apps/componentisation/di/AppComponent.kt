@@ -1,4 +1,4 @@
-package com.jmoraes.componentizationsample.di
+package com.tommannson.apps.componentisation.di
 
 import com.tommannson.apps.componentisation.App
 import com.tommannson.apps.componentisation.di.ActivityBinding

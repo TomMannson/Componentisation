@@ -1,7 +1,7 @@
 package com.tommannson.apps.componentisation
 
 import com.facebook.stetho.Stetho
-import com.jmoraes.componentizationsample.di.AppComponent
+import com.tommannson.apps.componentisation.di.AppComponent
 import com.jmoraes.componentizationsample.di.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
