@@ -15,11 +15,12 @@
  *
  * Created by Juliano Moraes, Rohan Dhruva, Emmanuel Boudrant.
  */
-package com.tommannson.apps.componentisation.arch
+package com.tommannson.apps.componentisation.arch.bus
 
 import androidx.annotation.VisibleForTesting
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
+import com.tommannson.apps.componentisation.arch.RxAction
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
@@ -29,20 +30,25 @@ import io.reactivex.subjects.PublishSubject
  *
  * @param owner is a LifecycleOwner used to auto disposeIfNeeded based on destroy observable
  */
-class ScopedEventBusFactory: ViewModel() {
+class BusFactory : ViewModel() {
 
     companion object {
+
+        private var bus: BusFactory? = null
 
         /**
          * Return the [EventBusFactory] associated to the [LifecycleOwner]. It there is no bus it will create one.
          * If the [LifecycleOwner] used is a fragment it use [Fragment#getViewLifecycleOwner()]
          */
         @JvmStatic
-        fun get(lifecycleOwner: AppCompatActivity): ScopedEventBusFactory {
-            return with(lifecycleOwner) {
-                ViewModelProviders.of(this).get(ScopedEventBusFactory::class.java)
+        @Synchronized
+        fun get(): BusFactory {
+            if (bus == null) {
+                bus = BusFactory()
             }
+            return bus as BusFactory;
         }
+
     }
 
 
@@ -75,54 +81,14 @@ class ScopedEventBusFactory: ViewModel() {
 
 
     inline fun <reified T : RxAction> getSafeManagedObservableFiltered() =
-            bussSubject.filter { it is T }
-                    .cast(T::class.java)
+        bussSubject.filter { it is T }
+            .cast(T::class.java)
 
     override fun onCleared() {
         super.onCleared()
         bussSubject.onComplete()
     }
 
-}
-
-/**
- * Extension on [LifecycleOwner] used to emit an event.
- */
-inline fun <reified T : RxAction> AppCompatActivity.emit(event: T) =
-        with(ScopedEventBusFactory.get(this)) {
-            getSafeManagedObservable()
-            emit(event)
-        }
-
-/**
- * Extension on [LifecycleOwner] used used to get the state observable.
- */
-inline fun AppCompatActivity.getSafeManagedObservable(): Observable<RxAction> =
-        ScopedEventBusFactory.get(this).getSafeManagedObservable()
-
-/**
- * This method returns a destroy observable that can be passed to [com.netflix.arch.UIPresenter]s and
- * [com.netflix.arch.UIView]s as needed. This is deliberately scoped to the attached
- * [LifecycleOwner]'s [Lifecycle.Event.ON_DESTROY] because a viewholder can be reused across
- * adapter destroys.
- */
-inline fun AppCompatActivity?.createDestroyObservable(): Observable<Unit> {
-    return Observable.create { emitter ->
-        if (this == null || this.lifecycle.currentState == Lifecycle.State.DESTROYED) {
-            emitter.onNext(Unit)
-            emitter.onComplete()
-            return@create
-        }
-        this.lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun emitDestroy() {
-                if (emitter.isDisposed) {
-                    emitter.onNext(Unit)
-                    emitter.onComplete()
-                }
-            }
-        })
-    }
 }
 
 

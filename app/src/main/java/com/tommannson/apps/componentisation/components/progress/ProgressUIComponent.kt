@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.tommannson.apps.componentisation.R
-import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
+import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.arch.component.UIComponent
 import com.tommannson.apps.componentisation.arch.bindView
 

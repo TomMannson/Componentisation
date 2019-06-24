@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tommannson.apps.componentisation.R
 import com.tommannson.apps.componentisation.arch.*
+import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.arch.component.UIComponent
 import com.tommannson.apps.componentisation.components.events.GithubIntaractionEvent
 import com.tommannson.apps.componentisation.components.github_components.GithubListState
@@ -36,7 +37,6 @@ open class GithubSearchResultComponent(container: ViewGroup, private val bus: Sc
     }
 
     init {
-
         listenMainStram2<GithubEvents, GithubIntaractionEvent, RxAction>(bus)
             .subscribe {
                 when (it) {

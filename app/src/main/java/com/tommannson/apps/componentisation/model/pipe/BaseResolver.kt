@@ -15,17 +15,15 @@ abstract class BaseResolver<INTERNAL : ComponentEvent, EXTERNAL : RxAction> {
     val compositeDisposable = CompositeDisposable()
 
     fun start() {
-        compositeDisposable += getInternalBus()
-            .subscribe { resolveIn(it) }
-        compositeDisposable += getExternalBus()
-            .subscribe { resolveExternalIn(it) }
+        compositeDisposable += getInternalBus()?.subscribe { resolveIn(it) }
+        compositeDisposable += getExternalBus()?.subscribe { resolveExternalIn(it) }
     }
 
     fun clean() {
         compositeDisposable.dispose()
     }
 
-    abstract fun getInternalBus(): Observable<INTERNAL>
-    abstract fun getExternalBus(): Observable<EXTERNAL>
+    abstract fun getInternalBus(): Observable<INTERNAL>?
+    abstract fun getExternalBus(): Observable<EXTERNAL>?
 
 }

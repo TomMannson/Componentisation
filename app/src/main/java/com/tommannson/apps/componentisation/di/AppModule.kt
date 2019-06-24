@@ -1,6 +1,6 @@
 package com.tommannson.apps.componentisation.di
 
-import com.tommannson.apps.componentisation.arch.BusFactory
+import com.tommannson.apps.componentisation.arch.bus.BusFactory
 import dagger.Provides
 
 @dagger.Module

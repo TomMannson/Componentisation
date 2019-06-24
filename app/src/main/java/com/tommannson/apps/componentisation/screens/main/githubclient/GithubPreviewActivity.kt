@@ -5,10 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import com.jmoraes.componentizationsample.components.github_components.controlpanel.GithubControlPanelComponent
+import com.tommannson.apps.componentisation.components.github_components.controlpanel.GithubControlPanelComponent
 import com.tommannson.apps.componentisation.R
-import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
+import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.arch.UINewHost
 import com.tommannson.apps.componentisation.components.github_components.search_list.GithubSearchResultComponent
 import com.tommannson.apps.componentisation.model.pipe.resolvers.GithubDataResolver

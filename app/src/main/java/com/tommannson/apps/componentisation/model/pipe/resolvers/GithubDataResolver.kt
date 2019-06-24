@@ -1,6 +1,6 @@
 package com.tommannson.apps.componentisation.model.pipe.resolvers
 
-import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
+import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.components.events.GithubIntaractionEvent
 import com.tommannson.apps.componentisation.components.github_components.search_list.GithubEvents
 import com.tommannson.apps.componentisation.model.pipe.BaseResolver

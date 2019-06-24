@@ -3,7 +3,7 @@ package com.tommannson.apps.componentisation.di
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 
-import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
+import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 
 import dagger.Provides
 
