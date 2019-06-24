@@ -5,13 +5,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import com.tommannson.apps.componentisation.R
 import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.arch.UINewComponent
 import com.tommannson.apps.componentisation.arch.bindView
 import io.reactivex.Observable
 
-class LoginUIComponent(private val containter: ViewGroup, private val bus: ScopedEventBusFactory, state: LoginState) :
+
+class LoginUIComponent
+@AssistedInject constructor(
+    @Assisted private val containter: ViewGroup,
+    private val bus: ScopedEventBusFactory,
+    @Assisted state: LoginState
+) :
     UINewComponent<LoginFormEvent, LoginState>(containter, state) {
 
     val etLogin: EditText by bindView(R.id.et_login)
@@ -35,14 +43,11 @@ class LoginUIComponent(private val containter: ViewGroup, private val bus: Scope
     }
 
     override fun render(localState: LoginState) {
-        if (localState.error) {
-            etLogin.setError("invalid")
-            etPassword.setError("invalid")
-        } else if (localState.progress) {
-            etLogin.isEnabled = false
-            etPassword.isEnabled = false
-            btnSubmit.isEnabled = false
-        }
+        etLogin.setError(if (localState.error) "invalid" else null)
+        etPassword.setError(if (localState.error) "invalid" else null)
+        etLogin.isEnabled = !localState.progress
+        etPassword.isEnabled = !localState.progress
+        btnSubmit.isEnabled = !localState.progress
     }
 
     init {
@@ -50,8 +55,9 @@ class LoginUIComponent(private val containter: ViewGroup, private val bus: Scope
             .track();
     }
 
-    override fun getContainerId() = 0;
-
-    override fun getUserInteractionEvents(): Observable<LoginFormEvent> = Observable.empty()
+    @AssistedInject.Factory
+    internal interface Factory {
+        fun create(containter: ViewGroup, state: LoginState = LoginState("", "")): LoginUIComponent
+    }
 }
 

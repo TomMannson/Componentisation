@@ -1,7 +1,6 @@
 package com.tommannson.apps.componentisation.arch
 
 import android.view.ViewGroup
-import com.tommannson.apps.componentisation.arch.BindingState.NEED_REBIND
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,9 +16,6 @@ abstract class UINewComponent<T, State>(
     var id = 0;
     val nestingManager = NestingComponentManager()
     val lazyInitialisation = LazyComponentManager(lazyState, this, nestingManager)
-
-    abstract fun getContainerId(): Int
-    abstract fun getUserInteractionEvents(): Observable<T>
 
     open fun create() {
         build()
@@ -48,6 +44,9 @@ abstract class UINewComponent<T, State>(
 
     abstract fun render(localState: State)
 
+    fun getContainerId() = 0
+    fun getUserInteractionEvents() = Observable.empty<T>()
+
     open fun dispose() {
         nestingManager.clearChildren()
     }
@@ -55,7 +54,10 @@ abstract class UINewComponent<T, State>(
     fun Observable<State>.track() {
         disposable.add(
             this.observeOn(AndroidSchedulers.mainThread())
-                .subscribe { this@UINewComponent.render(it) }
+                .subscribe {
+                    this@UINewComponent.render(it)
+                    localState = it
+                }
         )
     }
 }

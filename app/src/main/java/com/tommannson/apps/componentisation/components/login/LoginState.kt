@@ -7,7 +7,7 @@ data class LoginState(val login: String, val password: String) : RxAction() {
     var progress = false
     var error = false
 
-    constructor(login: String, password: String, progress: Boolean = false, error: Boolean = true) : this(
+    constructor(login: String, password: String, progress: Boolean = false, error: Boolean = false) : this(
         login,
         login
     ) {

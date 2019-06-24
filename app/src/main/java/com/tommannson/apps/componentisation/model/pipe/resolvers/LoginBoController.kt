@@ -20,7 +20,6 @@ class LoginBoController : BaseResolver<LoginFormEvent>() {
         when (event) {
             is LoginFormEvent.SubmitLogin -> {
                 Observable.just(event)
-                    .delay(1000, TimeUnit.MILLISECONDS)
                     .doOnNext {
                         screenScoped.emit(LoginState("", "", true))
                     }
@@ -28,10 +27,13 @@ class LoginBoController : BaseResolver<LoginFormEvent>() {
                     .map(::validateForm)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
-                        when(it){
-                            is LoginFormEvent.LoginDataInvalid -> LoginState("", "", error = false)
-                            is LoginFormEvent.LoginSuccess -> LoginState("", "", error = false, progress = false)
-                        }
+                        screenScoped.emit(
+                            when (it) {
+                                is LoginFormEvent.LoginDataInvalid -> LoginState("", "", error = true)
+                                is LoginFormEvent.LoginSuccess -> LoginState("", "", error = false, progress = false)
+                                else -> LoginState("", "", error = false, progress = false)
+                            }
+                        )
                     }
             }
         }
