@@ -7,6 +7,7 @@ import android.app.DialogFragment
 import android.app.Fragment
 //import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.View
+import com.tommannson.apps.componentisation.arch.component.UIComponent
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 import androidx.fragment.app.DialogFragment as SupportDialogFragment
@@ -22,7 +23,7 @@ public fun <V : View> SupportDialogFragment.bindView(id: Int): ReadOnlyProperty<
 
 public fun <V : View> Fragment.bindView(id: Int): ReadOnlyProperty<Fragment, V> = required(id, viewFinder)
 public fun <V : View> SupportFragment.bindView(id: Int): ReadOnlyProperty<SupportFragment, V> = required(id, viewFinder)
-public fun <V : View, A, B> UINewComponent<A, B>.bindView(id: Int): ReadOnlyProperty<UINewComponent<A, B>, V> =
+public fun <V : View, A, B> UIComponent<A, B>.bindView(id: Int): ReadOnlyProperty<UIComponent<A, B>, V> =
     required(id, viewFinder)
 //public fun <V : View> ViewHolder.bindView(id: Int)
 //        : ReadOnlyProperty<ViewHolder, V> = required(id, viewFinder)
@@ -96,7 +97,7 @@ public fun <V : View> SupportFragment.bindOptionalViews(vararg ids: Int)
 //public fun <V : View> ViewHolder.bindOptionalViews(vararg ids: Int)
 //        : ReadOnlyProperty<ViewHolder, List<V>> = optional(ids, viewFinder)
 
-private val UINewComponent<*, *>.viewFinder: Finder<UINewComponent<*, *>>
+private val UIComponent<*, *>.viewFinder: Finder<UIComponent<*, *>>
     get() = { container.findViewById(it) }
 private val View.viewFinder: Finder<View>
     get() = { findViewById(it) }
@@ -142,7 +143,7 @@ private class Lazy<T, V>(private val initializer: (T, KProperty<*>) -> V) : Read
     private var value: Any? = EMPTY
 
     override fun getValue(thisRef: T, property: KProperty<*>): V {
-//        if (value == EMPTY || (thisRef is UINewComponent<*,*> && thisRef.viewBindingState is BindingState.NEED_REBIND)) {
+//        if (value == EMPTY || (thisRef is UIComponent<*,*> && thisRef.viewBindingState is BindingState.NEED_REBIND)) {
         value = initializer(thisRef, property)
 //        }
 //        else if (value == EMPTY) {

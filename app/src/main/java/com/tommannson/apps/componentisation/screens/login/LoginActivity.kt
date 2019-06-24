@@ -1,30 +1,34 @@
 package com.tommannson.apps.componentisation.screens.login
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.tommannson.apps.componentisation.R
-import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.arch.UINewHost
 import com.tommannson.apps.componentisation.components.login.LoginUIComponent
 import com.tommannson.apps.componentisation.components.progress.ProgressUIComponent
 import com.tommannson.apps.componentisation.model.pipe.LoginModelResolver
+import com.tommannson.apps.componentisation.model.pipe.resolvers.LoginBoController
+import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : DaggerAppCompatActivity() {
 
     val model = LoginModelResolver()
     lateinit var host: UINewHost
 
     @Inject
     internal lateinit var loginUICompoentFactory: LoginUIComponent.Factory
+    @Inject
     internal lateinit var progressUICompoentFactory: ProgressUIComponent.Factory
+    @Inject
+    lateinit var controller: LoginBoController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        model.subscribeWithBus(ScopedEventBusFactory.get(this))
+
+        controller.start()
         host = UINewHost.create(this)
             .composition({
                 add(loginUICompoentFactory.create(findViewById(R.id.login_form)))

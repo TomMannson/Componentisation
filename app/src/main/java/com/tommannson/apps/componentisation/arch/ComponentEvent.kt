@@ -1,5 +1,3 @@
-package com.netflix.arch
-
-import com.tommannson.apps.componentisation.arch.RxAction
+package com.tommannson.apps.componentisation.arch
 
 open class ComponentEvent : RxAction()

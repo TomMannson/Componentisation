@@ -1,6 +1,6 @@
 package com.tommannson.apps.componentisation.components.login
 
-import com.netflix.arch.ComponentEvent
+import com.tommannson.apps.componentisation.arch.ComponentEvent
 
 sealed class LoginFormEvent : ComponentEvent() {
     class SubmitLogin(val login: String, val password: String) : LoginFormEvent()

@@ -1,6 +1,7 @@
-package com.jmoraes.componentizationsample.model.ws.github
+package com.tommannson.apps.componentisation.model.ws.github
 
 import com.google.gson.annotations.SerializedName
+import com.jmoraes.componentizationsample.model.ws.github.GithubSearchItem
 
 data class GithubSearchResult(
         @SerializedName("total_count") val totalCount: Int,

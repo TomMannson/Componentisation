@@ -9,26 +9,30 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.tommannson.apps.componentisation.R
 import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
-import com.tommannson.apps.componentisation.arch.UINewComponent
+import com.tommannson.apps.componentisation.arch.component.UIComponent
 import com.tommannson.apps.componentisation.arch.bindView
-import io.reactivex.Observable
+import com.tommannson.apps.componentisation.screens.main.githubclient.GithubPreviewActivity
 
 
 class LoginUIComponent
 @AssistedInject constructor(
-    @Assisted private val containter: ViewGroup,
+    @Assisted private var containter: ViewGroup,
     private val bus: ScopedEventBusFactory,
     @Assisted state: LoginState
 ) :
-    UINewComponent<LoginFormEvent, LoginState>(containter, state) {
+    UIComponent<LoginFormEvent, LoginState>(containter, state) {
 
     val etLogin: EditText by bindView(R.id.et_login)
     val etPassword: EditText by bindView(R.id.et_password)
     val btnSubmit: Button by bindView(R.id.btn_submit)
 
+    init {
+        bus.getSafeManagedObservableFiltered<LoginState>()
+            .track();
+    }
+
     override fun build() {
         inflateIfNeed()
-
         btnSubmit.setOnClickListener {
             val loginText = etLogin.text.toString();
             val passwordText = etPassword.text.toString()
@@ -43,16 +47,14 @@ class LoginUIComponent
     }
 
     override fun render(localState: LoginState) {
+        if(localState.success){
+            GithubPreviewActivity.start(containter.context)
+        }
         etLogin.setError(if (localState.error) "invalid" else null)
         etPassword.setError(if (localState.error) "invalid" else null)
         etLogin.isEnabled = !localState.progress
         etPassword.isEnabled = !localState.progress
         btnSubmit.isEnabled = !localState.progress
-    }
-
-    init {
-        bus.getSafeManagedObservableFiltered<LoginState>()
-            .track();
     }
 
     @AssistedInject.Factory

@@ -1,27 +1,30 @@
 package com.tommannson.apps.componentisation.arch
 
+import com.tommannson.apps.componentisation.arch.component.UIComponent
+import com.tommannson.apps.componentisation.arch.identity.ComponentId
+
 class NestingComponentManager() {
 
-    val list = mutableListOf<UINewComponent<*, *>>()
+    val nestingMap = mutableMapOf<ComponentId, UIComponent<*, *>>()
 
-    fun add(component: UINewComponent<*, *>) {
-        list += component
+    fun add(id: ComponentId, component: UIComponent<*, *>) {
+        nestingMap += Pair(id, component)
     }
 
     internal fun renderChildren() {
-        for (component in list) {
+        for ((key, component) in nestingMap) {
             component.commitState();
         }
     }
 
     internal fun createChildren() {
-        for (component in list) {
+        for ((key, component) in nestingMap) {
             component.create();
         }
     }
 
     fun clearChildren() {
-        for (component in list) {
+        for ((key, component) in nestingMap) {
             component.dispose();
         }
     }

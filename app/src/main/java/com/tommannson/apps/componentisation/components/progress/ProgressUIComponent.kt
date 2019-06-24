@@ -7,7 +7,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.tommannson.apps.componentisation.R
 import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
-import com.tommannson.apps.componentisation.arch.UINewComponent
+import com.tommannson.apps.componentisation.arch.component.UIComponent
 import com.tommannson.apps.componentisation.arch.bindView
 
 
@@ -16,7 +16,7 @@ class ProgressUIComponent
     @Assisted private val containter: ViewGroup,
     private val bus: ScopedEventBusFactory
 ) :
-    UINewComponent<Any, ProgressState>(containter, ProgressState(false)) {
+    UIComponent<Any, ProgressState>(containter, ProgressState(false)) {
 
     val progress: View by bindView(R.id.progress_root)
 

@@ -1,41 +1,55 @@
 package com.tommannson.apps.componentisation.model.pipe.resolvers
 
+import com.tommannson.apps.componentisation.arch.BusFactory
+import com.tommannson.apps.componentisation.arch.RxAction
 import com.tommannson.apps.componentisation.arch.ScopedEventBusFactory
+import com.tommannson.apps.componentisation.arch.plusAssign
 import com.tommannson.apps.componentisation.components.login.LoginFormEvent
 import com.tommannson.apps.componentisation.components.login.LoginState
+import com.tommannson.apps.componentisation.components.progress.ProgressState
 import com.tommannson.apps.componentisation.model.pipe.BaseResolver
-import com.tommannson.apps.componentisation.model.ws.MainInteractorImpl
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class LoginBoController : BaseResolver<LoginFormEvent>() {
-    override fun validType(input: Any) = type<LoginFormEvent>(input)
+class LoginBoController @Inject constructor() : BaseResolver<LoginFormEvent, RxAction>() {
 
-    val impl = MainInteractorImpl()
+
+    override fun getInternalBus() = screenScoped.getSafeManagedObservableFiltered<LoginFormEvent>()
+    override fun getExternalBus() = appScoped.getSafeManagedObservable()
+
+    @Inject
     lateinit var screenScoped: ScopedEventBusFactory
-    lateinit var appScoped: ScopedEventBusFactory
+    @Inject
+    lateinit var appScoped: BusFactory
 
-    override fun resolve(event: LoginFormEvent) {
+    override fun resolveIn(event: LoginFormEvent) {
         when (event) {
-            is LoginFormEvent.SubmitLogin -> {
-                Observable.just(event)
-                    .doOnNext {
-                        screenScoped.emit(LoginState("", "", true))
-                    }
-                    .delay(1000, TimeUnit.MILLISECONDS)
-                    .map(::validateForm)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        screenScoped.emit(
-                            when (it) {
-                                is LoginFormEvent.LoginDataInvalid -> LoginState("", "", error = true)
-                                is LoginFormEvent.LoginSuccess -> LoginState("", "", error = false, progress = false)
-                                else -> LoginState("", "", error = false, progress = false)
-                            }
-                        )
-                    }
+            is LoginFormEvent.SubmitLogin -> doOnSubmit(event)
+        }
+    }
+
+    private fun doOnSubmit(event: LoginFormEvent.SubmitLogin) {
+        compositeDisposable += Observable.just(event)
+            .doOnNext {
+                screenScoped.emit(ProgressState(true))
+                screenScoped.emit(LoginState("", "", true))
             }
+            .delay(1000, TimeUnit.MILLISECONDS)
+            .map(::validateForm)
+            .subscribe(::resolveExternalIn)
+    }
+
+    override fun resolveExternalIn(event: RxAction) {
+        if (event is LoginFormEvent) {
+            screenScoped.emit(
+                when (event) {
+                    is LoginFormEvent.LoginDataInvalid -> LoginState("", "", error = true)
+                    is LoginFormEvent.LoginSuccess -> LoginState("", "", success = true)
+                    else -> LoginState("", "", progress = false, error = false, success = false)
+                }
+            )
+            screenScoped.emit(ProgressState(false))
         }
     }
 

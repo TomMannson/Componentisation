@@ -1,24 +1,31 @@
 package com.tommannson.apps.componentisation.model.pipe
 
-import com.netflix.arch.ComponentEvent
+import com.tommannson.apps.componentisation.arch.ComponentEvent
+import com.tommannson.apps.componentisation.arch.RxAction
+import com.tommannson.apps.componentisation.arch.plusAssign
 import io.reactivex.Observable
-import io.reactivex.ObservableSource
-import io.reactivex.ObservableTransformer
+import io.reactivex.disposables.CompositeDisposable
 
-abstract class BaseResolver<T : ComponentEvent> : ObservableTransformer<T, T> {
+abstract class BaseResolver<INTERNAL : ComponentEvent, EXTERNAL : RxAction> {
 
-    abstract fun resolve(event: T);
+    abstract fun resolveIn(event: INTERNAL);
 
-    override fun apply(upstream: Observable<T>): ObservableSource<T> {
-        return upstream.filter { validType(it) }
-            .map {
-                resolve(it);
-                return@map it
-            }
+    abstract fun resolveExternalIn(event: EXTERNAL);
+
+    val compositeDisposable = CompositeDisposable()
+
+    fun start() {
+        compositeDisposable += getInternalBus()
+            .subscribe { resolveIn(it) }
+        compositeDisposable += getExternalBus()
+            .subscribe { resolveExternalIn(it) }
     }
 
-    abstract fun validType(input: Any): Boolean
+    fun clean() {
+        compositeDisposable.dispose()
+    }
 
-    inline fun <reified T> type(input: Any) = input is T
+    abstract fun getInternalBus(): Observable<INTERNAL>
+    abstract fun getExternalBus(): Observable<EXTERNAL>
 
 }

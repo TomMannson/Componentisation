@@ -5,15 +5,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.netflix.arch.DisposingChecker
-import java.util.*
-import kotlin.collections.HashMap
+import com.tommannson.apps.componentisation.arch.component.UIComponent
+import com.tommannson.apps.componentisation.arch.identity.ComponentId
+import com.tommannson.apps.componentisation.arch.identity.GUIDComponentId
+import com.tommannson.apps.componentisation.arch.identity.IdGenerator
 
 open class UINewHost : ViewModel(), UIParent {
 
     override fun getFindViewGroup(id: Int) = activity.findViewById<ViewGroup>(id)
 
     val disposingChecker = DisposingChecker()
-    val mapOfComponent = mutableMapOf<UUID, UINewComponent<*, *>>()
+    val mapOfComponent = mutableMapOf<ComponentId, UIComponent<*, *>>()
     var currentComponentNumber = 0;
     val stateMigrator = StateTreeMigrator()
     lateinit var activity: AppCompatActivity
@@ -27,8 +29,8 @@ open class UINewHost : ViewModel(), UIParent {
         }
     }
 
-    fun add(component: UINewComponent<*, *>) {
-        mapOfComponent[UUID.randomUUID()] = component
+    fun add(component: UIComponent<*, *>, id: ComponentId = IdGenerator.getNextNumberId()) {
+        mapOfComponent[id] = component
     }
 
     fun build(

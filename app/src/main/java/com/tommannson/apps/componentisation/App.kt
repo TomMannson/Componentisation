@@ -1,9 +1,17 @@
-package com.jmoraes.componentizationsample
+package com.tommannson.apps.componentisation
 
-import android.app.Application
 import com.facebook.stetho.Stetho
+import com.jmoraes.componentizationsample.di.AppComponent
+import com.jmoraes.componentizationsample.di.DaggerAppComponent
+import dagger.android.AndroidInjector
+import dagger.android.support.DaggerApplication
 
-class App: Application(){
+class App : DaggerApplication() {
+
+    val component by lazy { DaggerAppComponent.factory().create(this) as AppComponent }
+
+
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> = component
 
     override fun onCreate() {
         super.onCreate()

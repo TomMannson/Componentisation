@@ -2,7 +2,7 @@ package com.tommannson.apps.componentisation.model.ws
 
 
 import com.jmoraes.componentizationsample.model.ws.MainInteractor
-import com.jmoraes.componentizationsample.model.ws.github.GithubSearchResult
+import com.tommannson.apps.componentisation.model.ws.github.GithubSearchResult
 import com.jmoraes.componentizationsample.model.ws.github.dao.GithubApi
 import com.tommannson.apps.componentisation.model.ws.dao.PostService
 import com.tommannson.apps.componentisation.model.ws.dao.ServiceFactory

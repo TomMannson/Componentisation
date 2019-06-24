@@ -1,6 +1,6 @@
 package com.jmoraes.componentizationsample.model.ws.github.dao
 
-import com.jmoraes.componentizationsample.model.ws.github.GithubSearchResult
+import com.tommannson.apps.componentisation.model.ws.github.GithubSearchResult
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.GET

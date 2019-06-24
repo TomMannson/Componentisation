@@ -13,11 +13,7 @@ class LoginModelResolver {
     fun resolve(event: RxAction, factory: ScopedEventBusFactory) {
         when (event) {
             is LoginFormEvent -> {
-                LoginBoController()
-                    .also {
-                        it.screenScoped = factory
-                    }
-                    .resolve(event = event);
+
             }
         }
     }

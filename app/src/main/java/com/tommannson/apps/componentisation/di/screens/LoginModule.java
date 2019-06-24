@@ -1,4 +1,4 @@
-package com.tommannson.apps.componentisation.di.login;
+package com.tommannson.apps.componentisation.di.screens;
 
 import android.app.Activity;
 

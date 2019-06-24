@@ -1,8 +1,10 @@
 package com.tommannson.apps.componentisation.arch
 
-class LazyComponentManager(
+import com.tommannson.apps.componentisation.arch.component.UIComponent
+
+data class LazyComponentManager(
     private var lazyState: LazyState,
-    private val component: UINewComponent<*, *>,
+    private val component: UIComponent<*, *>,
     private val nestingManager: NestingComponentManager
 ) {
 
