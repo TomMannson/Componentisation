@@ -50,8 +50,8 @@ abstract class UIComponent<T, State>(
 
     abstract fun render(localState: State)
 
-    fun getContainerId() = 0
-    fun getUserInteractionEvents() = Observable.empty<T>()
+    open fun getContainerId() = 0
+    open fun filterState() = true
 
     open fun dispose() {
         nestingManager.clearChildren()
@@ -59,6 +59,7 @@ abstract class UIComponent<T, State>(
 
     fun Observable<State>.track() {
         disposable += this.observeOn(AndroidSchedulers.mainThread())
+            .filter { filterState() }
             .subscribe {
                 this@UIComponent.render(it)
                 localState = it

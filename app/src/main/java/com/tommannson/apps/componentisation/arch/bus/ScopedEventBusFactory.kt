@@ -17,13 +17,14 @@
  */
 package com.tommannson.apps.componentisation.arch.bus
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
-import com.tommannson.apps.componentisation.arch.ComponentEvent
 import com.tommannson.apps.componentisation.arch.EventBusFactory
 import com.tommannson.apps.componentisation.arch.RxAction
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
@@ -52,18 +53,27 @@ class ScopedEventBusFactory : ViewModel() {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val map = HashMap<Class<*>, Subject<*>>()
+    val mapPipe = HashMap<Class<*>, Disposable>()
 
 
     override fun onCleared() {
         super.onCleared()
         for ((key, bus) in map) {
+            mapPipe[key]?.dispose()
             bus.onComplete()
         }
     }
 
+
     private fun <T> create(clazz: Class<T>): Subject<T> {
         val subject = PublishSubject.create<T>().toSerialized()
-        map[clazz] = subject
+        map[clazz] = subject;
+        mapPipe[clazz] = subject
+            .map {
+                Log.d("BUS_LOG", it.toString())
+                return@map it
+            }
+            .subscribe()
         return subject
     }
 

@@ -36,7 +36,7 @@ class LoginFormController @Inject constructor() : BaseResolver<LoginFormEvent, R
         if (localState.progress) {
             return
         }
-        state = localState.copy(progress = true)
+        state = localState.copy(progress = true, error = false, success = false)
         screenScoped.emit(state as LoginState)
 
         appScoped.emit(LoginBusinessEvents::class.java, LoginBusinessEvents.PerformLogin(event.login, event.password))
@@ -46,13 +46,13 @@ class LoginFormController @Inject constructor() : BaseResolver<LoginFormEvent, R
         if (event is LoginBusinessEvents) {
 
             val newState: LoginState? = when (event) {
-                is LoginBusinessEvents.LoginDataInvalid -> LoginState("", "", error = true)
-                is LoginBusinessEvents.LoginSuccess -> LoginState("", "", success = true)
+                is LoginBusinessEvents.LoginDataInvalid -> LoginState("", "", error = true, progress = false)
+                is LoginBusinessEvents.LoginSuccess -> LoginState("", "", success = true, progress = false)
                 else -> null
             }
-            newState?.let {
-                state = it;
-                screenScoped.emit(it)
+            if(newState != null) {
+                state = newState;
+                screenScoped.emit(newState)
             }
 
         }
