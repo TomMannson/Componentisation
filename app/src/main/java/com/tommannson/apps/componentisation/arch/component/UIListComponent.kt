@@ -8,6 +8,4 @@ abstract class UIListComponent<T, State>(
 ) : UIComponent<T, List<State>>(container, initialState) {
 
     abstract fun onItemEvent(position: Int, event: T)
-
-
 }

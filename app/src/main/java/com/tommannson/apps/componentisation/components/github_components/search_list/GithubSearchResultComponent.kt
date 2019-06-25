@@ -29,7 +29,9 @@ open class GithubSearchResultComponent(container: ViewGroup, private val bus: Sc
     val listAdapter = GithubSearchAdapter()
 
     override fun build() {
-        LayoutInflater.from(container.context).inflate(R.layout.github_list_component, container, true)
+        if(container.findViewById<View>(R.id.recycler_view) == null) {
+            LayoutInflater.from(container.context).inflate(R.layout.github_list_component, container, true)
+        }
         list.apply {
             layoutManager = LinearLayoutManager(container.context)
             this.adapter = listAdapter;

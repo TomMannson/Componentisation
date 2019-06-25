@@ -33,11 +33,11 @@ class GithubPreviewActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.activity_list)
 
         model.start()
-        initComponents(findViewById(R.id.root))
+        initComponents()
     }
 
     @SuppressLint("CheckResult")
-    private fun initComponents(rootViewContainer: ViewGroup) {
+    private fun initComponents() {
         host = UINewHost.create(this)
             .composition {
                 add(

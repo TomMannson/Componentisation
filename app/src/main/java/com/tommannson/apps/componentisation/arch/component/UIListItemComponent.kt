@@ -8,6 +8,8 @@ abstract class UIListItemComponent<Event, State>(
     itemView: View
 ) : RecyclerView.ViewHolder(itemView) {
 
+
+
     abstract fun render(state: State)
 
 }

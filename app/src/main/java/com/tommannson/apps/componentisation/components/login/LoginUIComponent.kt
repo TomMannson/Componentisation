@@ -8,9 +8,9 @@ import android.widget.EditText
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.tommannson.apps.componentisation.R
+import com.tommannson.apps.componentisation.arch.bindView
 import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.arch.component.UIComponent
-import com.tommannson.apps.componentisation.arch.bindView
 import com.tommannson.apps.componentisation.screens.main.githubclient.GithubPreviewActivity
 
 
@@ -18,7 +18,7 @@ class LoginUIComponent
 @AssistedInject constructor(
     @Assisted private var containter: ViewGroup,
     private val bus: ScopedEventBusFactory,
-    @Assisted state: LoginState
+    @Assisted state: LoginState = LoginState("", "")
 ) :
     UIComponent<LoginFormEvent, LoginState>(containter, state) {
 
@@ -47,7 +47,7 @@ class LoginUIComponent
     }
 
     override fun render(localState: LoginState) {
-        if(localState.success){
+        if (localState.success) {
             GithubPreviewActivity.start(containter.context)
         }
         etLogin.setError(if (localState.error) "invalid" else null)

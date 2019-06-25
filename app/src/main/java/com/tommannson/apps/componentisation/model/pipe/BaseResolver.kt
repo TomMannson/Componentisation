@@ -5,6 +5,7 @@ import com.tommannson.apps.componentisation.arch.RxAction
 import com.tommannson.apps.componentisation.arch.plusAssign
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 abstract class BaseResolver<INTERNAL : ComponentEvent, EXTERNAL : RxAction> {
 
@@ -15,15 +16,18 @@ abstract class BaseResolver<INTERNAL : ComponentEvent, EXTERNAL : RxAction> {
     val compositeDisposable = CompositeDisposable()
 
     fun start() {
-        compositeDisposable += getInternalBus()?.subscribe { resolveIn(it) }
-        compositeDisposable += getExternalBus()?.subscribe { resolveExternalIn(it) }
+        compositeDisposable += getInternalBus()?.observeOn(Schedulers.computation())
+            ?.subscribe { resolveIn(it) }
+        compositeDisposable += getExternalBus()
+            ?.observeOn(Schedulers.computation())
+            ?.subscribe { resolveExternalIn(it) }
     }
 
     fun clean() {
         compositeDisposable.dispose()
     }
 
-    abstract fun getInternalBus(): Observable<INTERNAL>?
-    abstract fun getExternalBus(): Observable<EXTERNAL>?
+    open fun getInternalBus(): Observable<INTERNAL>? = Observable.empty<INTERNAL>()
+    open fun getExternalBus(): Observable<EXTERNAL>? = Observable.empty<EXTERNAL>()
 
 }
