@@ -1,17 +1,16 @@
-package com.tommannson.apps.componentisation.components.login
+package com.tommannson.apps.componentisation.components.login.form
 
-import com.tommannson.apps.componentisation.arch.RxAction
 import com.tommannson.apps.componentisation.arch.bus.BusFactory
 import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.model.pipe.BaseResolver
 import com.tommannson.apps.componentisation.model.usecase.login.LoginBusinessEvents
 import javax.inject.Inject
 
-class LoginFormController @Inject constructor() : BaseResolver<LoginFormEvent, RxAction>() {
+class LoginFormController @Inject constructor() : BaseResolver<LoginFormEvent, LoginBusinessEvents>() {
 
 
     override fun getInternalBus() = screenScoped.getSafeManagedObservableFiltered<LoginFormEvent>()
-    override fun getExternalBus() = appScoped.getSafeManagedObservable()
+    override fun getExternalBus() = appScoped.getSafeManagedObservableFiltered<LoginBusinessEvents>()
 
     @Inject
     lateinit var screenScoped: ScopedEventBusFactory
@@ -42,19 +41,25 @@ class LoginFormController @Inject constructor() : BaseResolver<LoginFormEvent, R
         appScoped.emit(LoginBusinessEvents::class.java, LoginBusinessEvents.PerformLogin(event.login, event.password))
     }
 
-    override fun resolveExternalIn(event: RxAction) {
-        if (event is LoginBusinessEvents) {
-
-            val newState: LoginState? = when (event) {
-                is LoginBusinessEvents.LoginDataInvalid -> LoginState("", "", error = true, progress = false)
-                is LoginBusinessEvents.LoginSuccess -> LoginState("", "", success = true, progress = false)
-                else -> null
-            }
-            if(newState != null) {
-                state = newState;
-                screenScoped.emit(newState)
-            }
-
+    override fun resolveExternalIn(event: LoginBusinessEvents) {
+        val newState: LoginState? = when (event) {
+            is LoginBusinessEvents.LoginDataInvalid -> LoginState(
+                "",
+                "",
+                error = true,
+                progress = false
+            )
+            is LoginBusinessEvents.LoginSuccess -> LoginState(
+                "",
+                "",
+                success = true,
+                progress = false
+            )
+            else -> null
+        }
+        if (newState != null) {
+            state = newState;
+            screenScoped.emit(newState)
         }
     }
 }

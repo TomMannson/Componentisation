@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import com.tommannson.apps.componentisation.components.github_components.controlpanel.GithubControlPanelComponent
 import com.tommannson.apps.componentisation.R
@@ -24,6 +25,7 @@ class GithubPreviewActivity : DaggerAppCompatActivity() {
     companion object {
 
         fun start(ctx: Context){
+            Log.d("BUS_LOG", "start_screen")
             ctx.startActivity(Intent(ctx, GithubPreviewActivity::class.java))
         }
     }

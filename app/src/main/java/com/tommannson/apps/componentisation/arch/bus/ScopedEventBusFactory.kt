@@ -25,6 +25,7 @@ import com.tommannson.apps.componentisation.arch.EventBusFactory
 import com.tommannson.apps.componentisation.arch.RxAction
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
@@ -66,7 +67,7 @@ class ScopedEventBusFactory : ViewModel() {
 
 
     private fun <T> create(clazz: Class<T>): Subject<T> {
-        val subject = PublishSubject.create<T>().toSerialized()
+        val subject = BehaviorSubject.create<T>().toSerialized()
         map[clazz] = subject;
         mapPipe[clazz] = subject
             .map {
@@ -93,6 +94,10 @@ class ScopedEventBusFactory : ViewModel() {
         (subject as Subject<T>).onNext(event)
     }
 
+    inline fun <reified T : RxAction> getSafeManagedObservableFiltered(): Observable<T> {
+        return getSafeManagedObservable(T::class.java)
+    }
+
     /**x
      * getSafeManagedObservable returns an Rx Observable which is
      *  *Safe* against reentrant events as it is serialized and
@@ -103,11 +108,6 @@ class ScopedEventBusFactory : ViewModel() {
     fun <T : RxAction> getSafeManagedObservable(clazz: Class<T>): Observable<T> {
         return if (map[clazz] != null) map[clazz] as Observable<T> else create(clazz)
     }
-
-    inline fun <reified T : RxAction> getSafeManagedObservableFiltered(): Observable<T> {
-        return getSafeManagedObservable(T::class.java)
-    }
-
 }
 
 

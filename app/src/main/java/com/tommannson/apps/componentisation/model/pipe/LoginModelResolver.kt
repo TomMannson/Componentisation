@@ -2,7 +2,7 @@ package com.tommannson.apps.componentisation.model.pipe
 
 import com.tommannson.apps.componentisation.arch.RxAction
 import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
-import com.tommannson.apps.componentisation.components.login.LoginFormEvent
+import com.tommannson.apps.componentisation.components.login.form.LoginFormEvent
 import io.reactivex.disposables.Disposable
 
 class LoginModelResolver {

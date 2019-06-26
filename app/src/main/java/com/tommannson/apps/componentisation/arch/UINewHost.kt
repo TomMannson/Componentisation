@@ -7,15 +7,16 @@ import androidx.lifecycle.ViewModelProviders
 import com.netflix.arch.DisposingChecker
 import com.tommannson.apps.componentisation.arch.component.UIComponent
 import com.tommannson.apps.componentisation.arch.identity.ComponentId
-import com.tommannson.apps.componentisation.arch.identity.GUIDComponentId
 import com.tommannson.apps.componentisation.arch.identity.IdGenerator
 
 open class UINewHost : ViewModel(), UIParent {
 
     override fun getFindViewGroup(id: Int) = activity.findViewById<ViewGroup>(id)
 
+    val idGenerator = IdGenerator.get()
     val disposingChecker = DisposingChecker()
-    val mapOfComponent = mutableMapOf<ComponentId, UIComponent<*, *>>()
+    private var lastTree = mutableMapOf<ComponentId, UIComponent<*, *>>()
+    private var currentTree = mutableMapOf<ComponentId, UIComponent<*, *>>()
     var currentComponentNumber = 0;
     val stateMigrator = StateTreeMigrator()
     lateinit var activity: AppCompatActivity
@@ -29,40 +30,44 @@ open class UINewHost : ViewModel(), UIParent {
         }
     }
 
-    fun add(component: UIComponent<*, *>, id: ComponentId = IdGenerator.getNextNumberId()) {
-        mapOfComponent[id] = component
+    fun add(component: UIComponent<*, *>, id: ComponentId = idGenerator.getNextNumberId()) {
+        currentTree[id] = component
     }
 
     fun build(
         needRender: Boolean = true
     ) {
-        for (component in mapOfComponent) {
+        idGenerator.reset()
+
+        for (component in currentTree) {
             component.value.create();
         }
+        stateMigrator.migrateState(lastTree, currentTree)
+        lastTree = currentTree
         if (needRender) {
-            for (component in mapOfComponent) {
+            for (component in currentTree) {
                 component.value.commitState();
             }
         }
     }
 
     fun dispatchRendering() {
-        for (component in mapOfComponent) {
+        for (component in currentTree) {
             component.value.commitState();
         }
     }
 
-    fun disposeIfNeeded(disposeTarget: Any) {
-        if (disposingChecker.check(disposeTarget)) {
-            for (component in mapOfComponent) {
-                component.value.dispose();
-            }
+    fun dispose() {
+        for (component in currentTree) {
+            component.value.dispose();
         }
     }
 
+
     fun composition(function: UINewHost.() -> Unit): UINewHost {
+        currentTree = mutableMapOf()
         function()
-        build(!mapOfComponent.isEmpty())
+        build(!currentTree.isEmpty())
         return this
     }
 }

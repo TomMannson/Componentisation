@@ -7,6 +7,7 @@ import com.tommannson.apps.componentisation.model.pipe.BaseResolver
 import com.tommannson.apps.componentisation.model.ws.MainInteractorImpl
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -26,6 +27,7 @@ class GithubDataResolver @Inject constructor() : BaseResolver<GithubIntaractionE
             is GithubIntaractionEvent.LoadRequest -> {
                 impl.fromWebservice()
                     .subscribeOn(Schedulers.io())
+                    .delay(1000, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
                         it?.body()?.let {

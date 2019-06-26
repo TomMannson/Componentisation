@@ -17,12 +17,14 @@
  */
 package com.tommannson.apps.componentisation.arch.bus
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
 import com.tommannson.apps.componentisation.arch.RxAction
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.Subject
 
 /**
  * It implements a Factory pattern generating Rx Subjects based on Event Types.
@@ -30,7 +32,7 @@ import io.reactivex.subjects.PublishSubject
  *
  * @param owner is a LifecycleOwner used to auto disposeIfNeeded based on destroy observable
  */
-class BusFactory : ViewModel() {
+class BusFactory {
 
     companion object {
 
@@ -51,10 +53,26 @@ class BusFactory : ViewModel() {
 
     }
 
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val bussSubject = PublishSubject.create<RxAction>().toSerialized()
+    val map = HashMap<Class<*>, Subject<*>>()
+    val mapPipe = HashMap<Class<*>, Disposable>()
 
+
+    private fun <T> create(clazz: Class<T>): Subject<T> {
+        val subject = PublishSubject.create<T>().toSerialized()
+        map[clazz] = subject;
+        mapPipe[clazz] = subject
+            .map {
+                Log.d("BUS_LOG", it.toString())
+                return@map it
+            }
+            .subscribe()
+        return subject
+    }
+
+    inline fun <reified T : RxAction> emit(event: T) {
+        emit(T::class.java, event)
+    }
 
     /**
      * emit will create (if needed) or use the existing Rx Subject to send events.
@@ -62,12 +80,14 @@ class BusFactory : ViewModel() {
      * @param clazz is the Event Class
      * @param event is the instance of the Event to be sent
      */
-    fun <T : RxAction> emit(event: T) {
-        bussSubject.onNext(event)
+    fun <T : RxAction> emit(clazz: Class<T>, event: T) {
+        val subject = if (map[clazz] != null) map[clazz] else create(clazz)
+        (subject as Subject<T>).onNext(event)
     }
 
-    fun <T : RxAction> emit(clazz: Class<*>, event: T) {
-        bussSubject.onNext(event)
+
+    inline fun <reified T : RxAction> getSafeManagedObservableFiltered(): Observable<T> {
+        return getSafeManagedObservable(T::class.java)
     }
 
     /**x
@@ -77,18 +97,9 @@ class BusFactory : ViewModel() {
      *
      *  @param clazz is the class of the event type used by this observable
      */
-    fun getSafeManagedObservable(): Observable<RxAction> = bussSubject
-
-
-    inline fun <reified T : RxAction> getSafeManagedObservableFiltered() =
-        bussSubject.filter { it is T }
-            .cast(T::class.java)
-
-    override fun onCleared() {
-        super.onCleared()
-        bussSubject.onComplete()
+    fun <T : RxAction> getSafeManagedObservable(clazz: Class<T>): Observable<T> {
+        return if (map[clazz] != null) map[clazz] as Observable<T> else create(clazz)
     }
-
 }
 
 

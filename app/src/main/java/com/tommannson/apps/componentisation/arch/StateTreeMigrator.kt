@@ -7,25 +7,17 @@ class StateTreeMigrator {
 
     fun migrateState(
         lastTree: MutableMap<ComponentId, UIComponent<*, *>>,
-        mapOfComponent: MutableMap<ComponentId, UIComponent<*, *>>
+        newTree: MutableMap<ComponentId, UIComponent<*, *>>
     ) {
-        for ((key, value) in lastTree) {
-            val target = mapOfComponent[key]
-            if (target != null) {
-                migrateComponentState(target, value)
-            } else {
-                mapOfComponent[key] = value
+        for ((key, lastComponent) in lastTree) {
+            val newComponent = newTree[key]
+            if (newComponent != null) {
+                migrateComponentState(lastComponent, newComponent)
             }
         }
     }
 
     fun migrateComponentState(old: UIComponent<*, *>, new: UIComponent<*, *>) {
-        MigrateStateJava.setState(new, old)
-        new.lazyInitialisation = old.lazyInitialisation.copy(component = new, nestingManager = new.nestingManager)
+        MigrateStateJava.setState(old, new)
     }
-
-    fun migrateComponentChildren(old: NestingComponentManager, new: NestingComponentManager) {
-        migrateState(old.nestingMap, new.nestingMap)
-    }
-
 }

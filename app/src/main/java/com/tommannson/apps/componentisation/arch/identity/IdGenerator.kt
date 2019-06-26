@@ -1,15 +1,17 @@
 package com.tommannson.apps.componentisation.arch.identity
 
-object IdGenerator {
+class IdGenerator {
 
-    var globalSeed: Int = 1;
-    @JvmStatic
-    @Synchronized
-    fun setSeed(lastNumber: Int) {
-        globalSeed = lastNumber
+    var seed: Int = 0;
+
+    companion object {
+        @Synchronized
+        fun get() = IdGenerator()
     }
 
-    @JvmStatic
-    @Synchronized
-    fun getNextNumberId(): ComponentId = NumberComponentId(globalSeed++)
+    fun getNextNumberId(): ComponentId = NumberComponentId(seed++)
+
+    fun reset(){
+        seed = 0;
+    }
 }

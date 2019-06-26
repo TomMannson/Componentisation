@@ -1,6 +1,6 @@
 package com.jmoraes.componentizationsample.screens.login
 
-import com.tommannson.apps.componentisation.components.login.LoginFormEvent
+import com.tommannson.apps.componentisation.components.login.form.LoginFormEvent
 import com.tommannson.apps.componentisation.arch.RxAction
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction

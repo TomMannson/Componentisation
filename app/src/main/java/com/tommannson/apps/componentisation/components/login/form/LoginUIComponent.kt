@@ -1,4 +1,4 @@
-package com.tommannson.apps.componentisation.components.login
+package com.tommannson.apps.componentisation.components.login.form
 
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +18,10 @@ class LoginUIComponent
 @AssistedInject constructor(
     @Assisted private var containter: ViewGroup,
     private val bus: ScopedEventBusFactory,
-    @Assisted state: LoginState = LoginState("", "")
+    @Assisted state: LoginState = LoginState(
+        "",
+        ""
+    )
 ) :
     UIComponent<LoginFormEvent, LoginState>(containter, state) {
 
@@ -36,7 +39,13 @@ class LoginUIComponent
         btnSubmit.setOnClickListener {
             val loginText = etLogin.text.toString();
             val passwordText = etPassword.text.toString()
-            bus.emit(LoginFormEvent::class.java, LoginFormEvent.SubmitLogin(loginText, passwordText))
+            bus.emit(
+                LoginFormEvent::class.java,
+                LoginFormEvent.SubmitLogin(
+                    loginText,
+                    passwordText
+                )
+            )
         }
     }
 
@@ -47,9 +56,7 @@ class LoginUIComponent
     }
 
     override fun render(localState: LoginState) {
-        if (localState.success) {
-            GithubPreviewActivity.start(containter.context)
-        }
+
         etLogin.setError(if (localState.error) "invalid" else null)
         etPassword.setError(if (localState.error) "invalid" else null)
         etLogin.isEnabled = !localState.progress
@@ -59,7 +66,11 @@ class LoginUIComponent
 
     @AssistedInject.Factory
     internal interface Factory {
-        fun create(containter: ViewGroup, state: LoginState = LoginState("", "")): LoginUIComponent
+        fun create(containter: ViewGroup, state: LoginState = LoginState(
+            "",
+            ""
+        )
+        ): LoginUIComponent
     }
 }
 

@@ -1,4 +1,4 @@
-package com.tommannson.apps.componentisation.components.login
+package com.tommannson.apps.componentisation.components.login.form
 
 import com.tommannson.apps.componentisation.arch.ComponentEvent
 
