@@ -25,8 +25,8 @@ import com.tommannson.apps.componentisation.arch.EventBusFactory
 import com.tommannson.apps.componentisation.arch.RxAction
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
 /**
@@ -74,6 +74,7 @@ class ScopedEventBusFactory : ViewModel() {
                 Log.d("BUS_LOG", it.toString())
                 return@map it
             }
+            .observeOn(Schedulers.computation())
             .subscribe()
         return subject
     }

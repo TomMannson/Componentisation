@@ -2,7 +2,7 @@ package com.tommannson.apps.componentisation.screens.login
 
 import android.os.Bundle
 import com.tommannson.apps.componentisation.R
-import com.tommannson.apps.componentisation.arch.ModelHolder
+import com.tommannson.apps.componentisation.arch.model.ModelHolder
 import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.components.login.form.LoginUIComponent
 import com.tommannson.apps.componentisation.components.login.navigation.LoginNavigationComponent

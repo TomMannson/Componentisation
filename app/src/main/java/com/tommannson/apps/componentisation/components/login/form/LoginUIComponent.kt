@@ -11,7 +11,6 @@ import com.tommannson.apps.componentisation.R
 import com.tommannson.apps.componentisation.arch.bindView
 import com.tommannson.apps.componentisation.arch.bus.ScopedEventBusFactory
 import com.tommannson.apps.componentisation.arch.component.UIComponent
-import com.tommannson.apps.componentisation.screens.main.githubclient.GithubPreviewActivity
 
 
 class LoginUIComponent

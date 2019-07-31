@@ -26,7 +26,7 @@ abstract class UIComponent<T, State>(
     internal var id = 0;
     internal var nestingManager = NestingComponentManager()
     internal var lazyInitialisation =
-        LazyComponentManager(lazyState, this, nestingManager)
+        LazyComponentManager(lazyState, this)
 
     open fun create() {
         build()

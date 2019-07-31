@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
-import com.netflix.arch.DisposingChecker
 import com.tommannson.apps.componentisation.arch.component.UIComponent
 import com.tommannson.apps.componentisation.arch.identity.ComponentId
 import com.tommannson.apps.componentisation.arch.identity.IdGenerator
@@ -14,7 +13,6 @@ open class UINewHost : ViewModel(), UIParent {
     override fun getFindViewGroup(id: Int) = activity.findViewById<ViewGroup>(id)
 
     val idGenerator = IdGenerator.get()
-    val disposingChecker = DisposingChecker()
     private var lastTree = mutableMapOf<ComponentId, UIComponent<*, *>>()
     private var currentTree = mutableMapOf<ComponentId, UIComponent<*, *>>()
     var currentComponentNumber = 0;

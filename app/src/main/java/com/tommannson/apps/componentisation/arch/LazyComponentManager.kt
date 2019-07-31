@@ -4,14 +4,12 @@ import com.tommannson.apps.componentisation.arch.component.UIComponent
 
 data class LazyComponentManager(
     private var lazyState: LazyState,
-    private val component: UIComponent<*, *>,
-    private val nestingManager: NestingComponentManager
+    private val component: UIComponent<*, *>
 ) {
 
     fun performLazyLoadingIfNeed() {
         if (lazyState.lazy) {
-            component.build()
-            nestingManager.createChildren()
+            component.create()
         }
     }
 

@@ -1,4 +1,4 @@
-package com.tommannson.apps.componentisation.arch
+package com.tommannson.apps.componentisation.arch.model
 
 import androidx.lifecycle.ViewModel
 import com.tommannson.apps.componentisation.model.pipe.BaseResolver

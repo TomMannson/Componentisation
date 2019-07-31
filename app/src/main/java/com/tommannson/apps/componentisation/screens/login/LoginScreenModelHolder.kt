@@ -1,6 +1,6 @@
 package com.tommannson.apps.componentisation.screens.login
 
-import com.tommannson.apps.componentisation.arch.ModelHolder
+import com.tommannson.apps.componentisation.arch.model.ModelHolder
 import com.tommannson.apps.componentisation.components.login.form.LoginFormController
 import com.tommannson.apps.componentisation.components.login.navigation.LoginNavigationController
 import com.tommannson.apps.componentisation.components.progress.ProgressController

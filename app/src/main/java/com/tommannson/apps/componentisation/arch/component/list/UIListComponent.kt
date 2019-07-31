@@ -1,6 +1,7 @@
-package com.tommannson.apps.componentisation.arch.component
+package com.tommannson.apps.componentisation.arch.component.list
 
 import android.view.ViewGroup
+import com.tommannson.apps.componentisation.arch.component.UIComponent
 
 abstract class UIListComponent<T, State>(
     container: ViewGroup,
